@@ -10,11 +10,11 @@ import { WhatsappService } from './whatsapp.service';
 
 @Controller('webhook')
 export class WhatsappController {
-  private readonly logger = new Logger(WhatsappService.name);
+  private readonly logger = new Logger(WhatsappController.name);
   constructor(private readonly whatsappService: WhatsappService) {}
 
   @Get()
-  verifyWebhook(
+  public verifyWebhook(
     @Query('hub.mode') mode: string,
     @Query('hub.verify_token') token: string,
     @Query('hub.challenge') challenge: string,

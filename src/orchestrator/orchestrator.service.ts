@@ -18,29 +18,43 @@ export class OrchestratorService {
     const sender: string = rawText?.from || '';
     const message: string = rawText?.text?.body || '';
     const messageType: string = rawText?.type || '';
-    const categoryByList: string =
+    const messageCategoryByList: string =
       rawText?.interactive?.list_reply?.id ||
       rawText?.interactive?.button_reply?.id ||
       '';
 
-    const isNew = this.userSessionService.isNewOrExpired(sender);
-
-    if (isNew) {
-      await this.messagingService.sendGreeting(sender);
-    }
+    const isNewOrExpired = this.userSessionService.isNewOrExpired(sender);
     this.userSessionService.updateSession(sender);
 
-    //TODO lanjutkan logika kodingan ini
-    if (messageType == 'text') {
-      const messageCategory: string =
-        await this.classificationService.classifyMessage(message);
+    const messageCategory: string =
+      await this.classificationService.classifyMessage(message);
 
+    if (isNewOrExpired) {
+      await this.messagingService.sendGreeting(sender);
+    }
+
+    if (messageType == 'text') {
+      await this.messageTypeText(sender, messageCategory);
+    } else if (messageType == 'interactive') {
       return await this.messagingService.sendMessageByTemplate(
+        sender,
+        messageCategoryByList,
+      );
+    } else {
+      return this.messagingService.sendUnknowMessage(sender);
+    }
+  }
+
+  public async messageTypeText(sender: string, messageCategory: string) {
+    if (messageCategory == 'salam') {
+      return;
+    } else if (messageCategory == 'lainnya') {
+      return this.messagingService.sendUnknowMessage(sender);
+    } else {
+      return this.messagingService.sendMessageByTemplate(
         sender,
         messageCategory,
       );
-    } else if (messageType == 'interactive') {
-      await this.messagingService.sendMessageByTemplate(sender, categoryByList);
-    } else return;
+    }
   }
 }

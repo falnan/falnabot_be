@@ -1,0 +1,29 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  // provider = "postgresql"
+  // provider = "mysql"
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id           String         @id @default(cuid())
+  phoneNumber  String         @unique
+  name         String?
+  message       Message[]
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+}
+
+model Message {
+  id          String      @id @default(cuid())
+  userId      String
+  user        User        @relation(fields:[userId], references: [id])
+  message     String
+  messageClassification String
+  createdAt    DateTime       @default(now())
+}

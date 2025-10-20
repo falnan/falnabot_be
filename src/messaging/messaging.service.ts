@@ -30,20 +30,19 @@ export class MessagingService {
 
   public async sendMessageByTemplate(
     sender: string,
-    message_category: string,
+    messageCategory: string,
   ): Promise<any> {
     try {
       const matchedTemplate = dataAITemplate.find(
         (item) =>
-          item.question_kategory.toLowerCase() ==
-          message_category.toLowerCase(),
+          item.questionCategory.toLowerCase() == messageCategory.toLowerCase(),
       );
 
       if (!matchedTemplate) {
-        // FIXME perbaiki bagian 'maaflah' jika klasifikasi tidak cocok
-        await this.sendManualMessage(sender, 'maaflah');
+        await this.sendUnknowMessage(sender);
         return;
       }
+
       const result = await this.sendManualMessage(
         sender,
         matchedTemplate.answer,

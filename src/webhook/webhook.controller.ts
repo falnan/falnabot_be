@@ -6,7 +6,6 @@ import {
   Logger,
   Post,
   Query,
-  Req,
   Res,
 } from '@nestjs/common';
 import { WebhookService } from './webhook.service';

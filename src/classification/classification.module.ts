@@ -5,5 +5,6 @@ import { ClassificationController } from './classification.controller';
 @Module({
   providers: [ClassificationService],
   controllers: [ClassificationController],
+  exports: [ClassificationService],
 })
 export class ClassificationModule {}

@@ -8,11 +8,11 @@ export class MessagingController {
 
   @Get()
   public testing() {
-    const result = this.messagingService.sendManualMessage(
+    const result = this.messagingService.sendGreeting(
       '+6282285567722',
-      'hai',
+      // '+6282219727886',
+      // 'permintaan_data',
     );
-    this.logger.log('berhasil');
     return result;
   }
 }

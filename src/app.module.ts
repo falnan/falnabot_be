@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { WhatsappModule } from './whatsapp/whatsapp.module';
 import { ConfigModule } from '@nestjs/config';
 import { WebhookModule } from './webhook/webhook.module';
 import { PrismaModule } from './infrastructure/database/prisma/prisma.module';
@@ -10,8 +9,7 @@ import { OrchestratorModule } from './orchestrator/orchestrator.module';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
-    // WhatsappModule,
-    // WebhookModule,
+    WebhookModule,
     PrismaModule,
     MessagingModule,
     ClassificationModule,

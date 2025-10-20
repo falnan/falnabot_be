@@ -1,6 +1,8 @@
 import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
+import { dataAITemplate } from 'src/infrastructure/templates/data-ai.template';
+import { listTemplate } from 'src/infrastructure/templates/list.template';
 
 @Injectable()
 export class MessagingService {
@@ -26,30 +28,33 @@ export class MessagingService {
     }
   }
 
-  //   TODO:
-  //   -buatkan logika send dengan AI
-  public async sendAIMessage(sender: string, message: string): Promise<any> {
+  public async sendMessageByTemplate(
+    sender: string,
+    message_category: string,
+  ): Promise<any> {
     try {
-      const response = await lastValueFrom(
-        this.httpService.post('/messages', {
-          messaging_product: 'whatsapp',
-          to: sender,
-          text: { body: message },
-        }),
+      const matchedTemplate = dataAITemplate.find(
+        (item) =>
+          item.question_kategory.toLowerCase() ==
+          message_category.toLowerCase(),
       );
 
-      return response.data;
+      if (!matchedTemplate) {
+        // FIXME perbaiki bagian 'maaflah' jika klasifikasi tidak cocok
+        await this.sendManualMessage(sender, 'maaflah');
+        return;
+      }
+      const result = await this.sendManualMessage(
+        sender,
+        matchedTemplate.answer,
+      );
+      return result;
     } catch (error) {
       this.logger.error('Error di sendAIMessage:', error.stack);
     }
   }
 
-  //   TODO
-  // -perbaiki rows agar sesuai automatis sesuai template
-  public async sendUnknowMessage(
-    sender: string,
-    message: string,
-  ): Promise<any> {
+  public async sendUnknowMessage(sender: string): Promise<any> {
     try {
       const response = await lastValueFrom(
         this.httpService.post('/messages', {
@@ -69,43 +74,44 @@ export class MessagingService {
               sections: [
                 {
                   title: 'Layanan Utama',
-                  rows: [
-                    {
-                      id: 'penelitian',
-                      title: 'Izin Penelitian',
-                      description: 'Ajukan izin penelitian di BP3MI Riau.',
-                    },
-                    {
-                      id: 'permintaan_data',
-                      title: 'Akses Data Resmi',
-                      description: 'Permintaan data resmi BP3MI Riau.',
-                    },
-                    {
-                      id: 'perizinan_magang',
-                      title: 'Izin Magang',
-                      description: 'Ajukan izin magang di BP3MI Riau.',
-                    },
-                    {
-                      id: 'permohonan_kerja_sama',
-                      title: 'Kerja Sama',
-                      description: 'Ajukan kerja sama kelembagaan.',
-                    },
-                    {
-                      id: 'inf_lowongan_kejr',
-                      title: 'Info Lowongan',
-                      description: 'Lihat daftar lowongan luar negeri resmi.',
-                    },
-                    {
-                      id: 'info_p3mi_riau',
-                      title: 'Daftar P3MI Riau',
-                      description: 'Lihat perusahaan penempatan resmi di Riau.',
-                    },
-                    {
-                      id: 'kendala_siskop2mi',
-                      title: 'Kendala SISKOP2MI',
-                      description: 'Laporkan kendala aplikasi SISKOP2MI.',
-                    },
-                  ],
+                  rows: listTemplate,
+                },
+              ],
+            },
+          },
+        }),
+      );
+
+      return response.data;
+    } catch (error) {
+      this.logger.error('Error di sendUnknowMessage:', error.stack);
+    }
+  }
+  public async sendGreeting(sender: string): Promise<any> {
+    try {
+      const response = await lastValueFrom(
+        this.httpService.post('/messages', {
+          messaging_product: 'whatsapp',
+          to: sender,
+          type: 'interactive',
+          interactive: {
+            type: 'list',
+            body: {
+              text: `👋 Hai. Saya *Zapin AI*, asisten digital yang siap membantu Anda mendapatkan informasi  seputar layanan BP3MI. Anda dapat bertanya langsung, misalnya: 
+
+💬_Bagaimana cara mengajukan izin penelitian?_
+
+Atau, Anda juga dapat mengakses layanan resmi melalui menu di bawah ini.`,
+            },
+            footer: {
+              text: 'Zapin AI - Asisten Digital BP3MI Riau',
+            },
+            action: {
+              button: 'Lihat Layanan',
+              sections: [
+                {
+                  title: 'Layanan Utama',
+                  rows: listTemplate,
                 },
               ],
             },

@@ -11,7 +11,6 @@ export class OrchestratorService {
     private readonly classificationService: ClassificationService,
     private readonly userSessionService: UserSessionService,
   ) {}
-
   public async chatbotFlow(body: any) {
     const rawText = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
     if (!rawText) return;
@@ -23,11 +22,15 @@ export class OrchestratorService {
       rawText?.interactive?.button_reply?.id ||
       '';
 
+    this.logger.log(sender);
+
     const isNewOrExpired = this.userSessionService.isNewOrExpired(sender);
     this.userSessionService.updateSession(sender);
 
     const messageCategory: string =
       await this.classificationService.classifyMessage(message);
+
+    this.logger.log(message, messageCategory);
 
     if (isNewOrExpired) {
       await this.messagingService.sendGreeting(sender);
@@ -36,7 +39,7 @@ export class OrchestratorService {
     if (messageType == 'text') {
       await this.messageTypeText(sender, messageCategory);
     } else if (messageType == 'interactive') {
-      return await this.messagingService.sendMessageByTemplate(
+      return await this.messagingService.sendMessageByListTemplate(
         sender,
         messageCategoryByList,
       );
@@ -47,11 +50,14 @@ export class OrchestratorService {
 
   public async messageTypeText(sender: string, messageCategory: string) {
     if (messageCategory == 'salam') {
+      this.logger.log('masuk salam');
       return;
     } else if (messageCategory == 'lainnya') {
+      this.logger.log('masuk lainnya');
       return this.messagingService.sendUnknowMessage(sender);
     } else {
-      return this.messagingService.sendMessageByTemplate(
+      this.logger.log('masuk template');
+      return this.messagingService.sendMessageByDataAITemplate(
         sender,
         messageCategory,
       );

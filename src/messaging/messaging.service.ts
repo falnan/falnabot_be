@@ -2,7 +2,10 @@ import { HttpService } from '@nestjs/axios';
 import { Injectable, Logger } from '@nestjs/common';
 import { lastValueFrom } from 'rxjs';
 import { dataAITemplate } from 'src/infrastructure/templates/data-ai.template';
-import { listTemplate } from 'src/infrastructure/templates/list.template';
+import {
+  listTemplate,
+  listTemplateWithoutAnswer,
+} from 'src/infrastructure/templates/list.template';
 
 @Injectable()
 export class MessagingService {
@@ -28,16 +31,50 @@ export class MessagingService {
     }
   }
 
-  public async sendMessageByTemplate(
+  public async sendMessageByDataAITemplate(
     sender: string,
     messageCategory: string,
   ): Promise<any> {
     try {
       const matchedTemplate = dataAITemplate.find(
         (item) =>
-          item.questionCategory.toLowerCase() == messageCategory.toLowerCase(),
+          item.questionCategory.toLowerCase().trim() ==
+          messageCategory.toLowerCase().trim(),
       );
 
+      this.logger.log(
+        'available categories:',
+        dataAITemplate.map((i) => i.questionCategory),
+      );
+
+      this.logger.log(messageCategory, matchedTemplate);
+      if (!matchedTemplate) {
+        await this.sendUnknowMessage(sender);
+        return;
+      }
+
+      const result = await this.sendManualMessage(
+        sender,
+        matchedTemplate.answer,
+      );
+      return result;
+    } catch (error) {
+      this.logger.error('Error di sendAIMessage:', error.stack);
+    }
+  }
+  public async sendMessageByListTemplate(
+    sender: string,
+    messageCategory: string,
+  ): Promise<any> {
+    try {
+      const matchedTemplate = listTemplate.find(
+        (item) =>
+          item.id.toLowerCase().trim() == messageCategory.toLowerCase().trim(),
+      );
+      this.logger.log({
+        matchedTemplate: matchedTemplate,
+        messageCategory: messageCategory,
+      });
       if (!matchedTemplate) {
         await this.sendUnknowMessage(sender);
         return;
@@ -73,7 +110,7 @@ export class MessagingService {
               sections: [
                 {
                   title: 'Layanan Utama',
-                  rows: listTemplate,
+                  rows: listTemplateWithoutAnswer,
                 },
               ],
             },
@@ -98,7 +135,7 @@ export class MessagingService {
             body: {
               text: `👋 Hai. Saya *Zapin AI*, asisten digital yang siap membantu Anda mendapatkan informasi  seputar layanan BP3MI. Anda dapat bertanya langsung, misalnya: 
 
-💬_Bagaimana cara mengajukan izin penelitian?_
+💬_Bagaimana cara bekerja ke luar negeri?_
 
 Atau, Anda juga dapat mengakses layanan resmi melalui menu di bawah ini.`,
             },
@@ -110,7 +147,7 @@ Atau, Anda juga dapat mengakses layanan resmi melalui menu di bawah ini.`,
               sections: [
                 {
                   title: 'Layanan Utama',
-                  rows: listTemplate,
+                  rows: listTemplateWithoutAnswer,
                 },
               ],
             },

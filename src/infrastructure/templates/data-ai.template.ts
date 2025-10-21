@@ -5,17 +5,21 @@ interface DataAITemplate {
 
 export const dataAITemplate: DataAITemplate[] = [
   {
-    questionCategory: 'penelitian',
-    answer: `📚 Untuk permohonan *penelitian* di lingkungan BP3MI Riau, silakan isi formulir berikut:  
-👉 [Formulir Penelitian](https://abc.com)  
+    questionCategory: 'permohonan_izin_penelitian',
+    answer: `📚 Untuk permohonan *penelitian* di lingkungan BP3MI Riau, silakan isi formulir berikut:
+    👉 [Formulir Penelitian](https://abc.com)
 
-Setelah formulir dikirim, tim kami akan meninjau dan menghubungi Anda untuk konfirmasi lebih lanjut.  
-Mohon menunggu balasan dari kami.📬  
-Jika belum ada respon setelah *1×24 jam*, silakan hubungi kembali melalui pesan ini.
-Terima kasih atas kerja samanya.🙏`,
+    Setelah formulir dikirim, tim kami akan meninjau dan menghubungi Anda untuk konfirmasi lebih lanjut.
+    Mohon menunggu balasan dari kami.📬
+    Jika belum ada respon setelah *1×24 jam*, silakan hubungi kembali melalui pesan ini.
+    Terima kasih atas kerja samanya.🙏`,
   },
   {
-    questionCategory: 'permintaan_data',
+    questionCategory: 'cara_bekerja_ke_luar_negeri',
+    answer: `mana lah saya tahu`,
+  },
+  {
+    questionCategory: 'permintaan_data_resmi',
     answer: `📊 Untuk keperluan *permintaan data resmi* BP3MI Riau, silakan isi formulir berikut:  
 👉 [Formulir Permintaan Data](https://abc.com)  
 
@@ -25,7 +29,7 @@ Apabila belum ada respon setelah *1×24 jam*, silakan hubungi kembali melalui pe
 Terima kasih.🙏`,
   },
   {
-    questionCategory: 'perizinan_magang',
+    questionCategory: 'pengajuan_izin_magang',
     answer: `🎓 Untuk pengajuan *magang* di BP3MI Riau, silakan isi formulir berikut:  
 👉 [Formulir Perizinan Magang](https://abc.com)  
 
@@ -68,5 +72,9 @@ Tim teknis kami akan membantu secepat mungkin.
 📬 Mohon menunggu balasan dari kami.  
 Jika belum ada respon setelah *1×24 jam*, silakan hubungi kembali melalui pesan ini.  
 Terima kasih.🙏`,
+  },
+  {
+    questionCategory: 'hanya_terimakasih',
+    answer: `Senang dapat membantu Anda 🙌. Apabila terdapat pertanyaan lain, jangan ragu untuk menghubungi saya kembali.`,
   },
 ];

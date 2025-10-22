@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Conversation, Message, PrismaClient } from 'generated/prisma';
+import { Message, Prisma, PrismaClient } from 'generated/prisma';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -27,18 +27,15 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
   }
 
-  async messageOutgoing(message: Message) {
+  async messageOutgoing(message: Prisma.MessageCreateInput) {
     return this.message.create({
       data: message,
     });
   }
 
-  async createConversation(adminId: string, clientId: string) {
+  async createConversation(conversation: Prisma.ConversationCreateInput) {
     return this.conversation.create({
-      data: {
-        adminId: adminId,
-        clientId: clientId,
-      },
+      data: conversation,
     });
   }
 }

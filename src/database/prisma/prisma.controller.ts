@@ -121,9 +121,31 @@ export class PrismaController {
 
   @Get('conversation')
   async conversation() {
-    return this.prisma.createConversation(
-      'cmh1t1ie90000hxncrvd6hajh',
-      'cmh1t1iem0001hxncsqwoonwj',
-    );
+    return this.prisma.createConversation({
+      admin: { connect: { id: 'cmh22vb3g0000wxo4mtrrx2ez' } },
+      client: { connect: { id: 'cmh22vb4h0002wxo4q8et81bj' } },
+    });
+  }
+
+  @Get('message')
+  async message() {
+    return this.prisma.messageOutgoing({
+      conversation: { connect: { id: 'cmh22x8z10001wxfudfze47r9' } },
+      messageClassification: 'salam',
+      user: { connect: { id: 'cmh22vb3g0000wxo4mtrrx2ez' } },
+      message: 'hai',
+      messageType: 'text',
+    });
+  }
+
+  //TODO pikirkan api akan ditaruh di file/folder mana
+  @Get('user')
+  async user() {
+    return this.prisma.user.findMany();
+  }
+
+  @Get('ngobrol')
+  async ngobrol() {
+    return this.prisma.conversation.findMany();
   }
 }

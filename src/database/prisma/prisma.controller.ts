@@ -1,5 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
+import { Conversation, Role } from 'generated/prisma';
 
 @Controller('prisma')
 export class PrismaController {
@@ -10,14 +11,25 @@ export class PrismaController {
     return this.prisma.user.findMany();
   }
 
+  // @Get('coba')
+  // async seedCoba() {
+  //   const admin = await this.prisma.user.create({
+  //     data: {
+  //       name: 'Admin Utama',
+  //       phoneNumber: '0811111111',
+  //       role: Role.admin,
+  //     },
+  //   });
+  //   return admin;
+  // }
+
   @Get('seed')
   async seedData() {
-    // 🌱 1. Buat Admin
     const admin = await this.prisma.user.create({
       data: {
         name: 'Admin Utama',
         phoneNumber: '0811111111',
-        role: 'admin',
+        role: Role.admin,
       },
     });
 
@@ -26,7 +38,7 @@ export class PrismaController {
       data: {
         name: 'Client A',
         phoneNumber: '0822222222',
-        role: 'client',
+        role: Role.client,
       },
     });
 
@@ -34,7 +46,7 @@ export class PrismaController {
       data: {
         name: 'Client B',
         phoneNumber: '0833333333',
-        role: 'client',
+        role: Role.client,
       },
     });
 
@@ -100,5 +112,18 @@ export class PrismaController {
       clients: [client1, client2],
       conversations: [conversation1, conversation2],
     };
+  }
+
+  @Get('lihat')
+  async cari() {
+    return this.prisma.findOrCreateByPhone('0811111111');
+  }
+
+  @Get('conversation')
+  async conversation() {
+    return this.prisma.createConversation(
+      'cmh1t1ie90000hxncrvd6hajh',
+      'cmh1t1iem0001hxncsqwoonwj',
+    );
   }
 }

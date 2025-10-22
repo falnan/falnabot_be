@@ -2,11 +2,13 @@ import { Injectable, Logger } from '@nestjs/common';
 import { ClassificationService } from 'src/classification/classification.service';
 import { MessagingService } from 'src/messaging/messaging.service';
 import { UserSessionService } from './user-session/user-session.service';
+import { PrismaService } from 'src/database/prisma/prisma.service';
 
 @Injectable()
 export class OrchestratorService {
   private readonly logger = new Logger(OrchestratorService.name);
   constructor(
+    private prisma: PrismaService,
     private readonly messagingService: MessagingService,
     private readonly classificationService: ClassificationService,
     private readonly userSessionService: UserSessionService,

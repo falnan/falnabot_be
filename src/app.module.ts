@@ -6,6 +6,7 @@ import { ClassificationModule } from './classification/classification.module';
 import { OrchestratorModule } from './orchestrator/orchestrator.module';
 import { PrismaService } from './database/prisma/prisma.service';
 import { PrismaModule } from './database/prisma/prisma.module';
+import { ApiModule } from './api/api.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { PrismaModule } from './database/prisma/prisma.module';
     ClassificationModule,
     OrchestratorModule,
     PrismaModule,
+    ApiModule,
   ],
   providers: [PrismaService],
 })

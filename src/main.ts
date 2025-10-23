@@ -4,6 +4,8 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
+// import cors from '@fastify/cors';
+const cors = require('@fastify/cors');
 
 async function bootstrap() {
   const isDev = true;
@@ -16,6 +18,13 @@ async function bootstrap() {
         : ['error', 'warn', 'log'],
     },
   );
+
+  await app.register(cors, {
+    origin: ['http://localhost:5173'],
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    credentials: true,
+  });
+
   await app.listen(process.env.PORT ?? 3000, '0.0.0.0');
 }
 bootstrap();

@@ -1,4 +1,4 @@
-import { Controller, Get, Logger, Query } from '@nestjs/common';
+import { Controller, Get, Logger, Param, Query } from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
 
 @Controller('api')
@@ -29,8 +29,25 @@ export class ApiController {
 
   @Get('conversations')
   async findManyConversations() {
-    return this.prisma.conversation.findMany({
-      include: { messages: true },
+    return this.prisma.user.findMany({
+      where: { role: 'client' },
+      include: {
+        messages: {
+          take: 1,
+          orderBy: { createdAt: 'desc' },
+        },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
+  }
+
+  @Get('conversation/:id')
+  async findConversationById(@Param('id') id: string) {
+    return this.prisma.user.findUnique({
+      where: { id: id },
+      include: {
+        messages: { orderBy: { createdAt: 'desc' } },
+      },
     });
   }
 }

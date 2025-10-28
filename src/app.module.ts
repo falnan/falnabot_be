@@ -7,6 +7,7 @@ import { OrchestratorModule } from './orchestrator/orchestrator.module';
 import { PrismaService } from './database/prisma/prisma.service';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { ApiModule } from './api/api.module';
+import { EventsModule } from './events/events.module';
 
 @Module({
   imports: [
@@ -17,6 +18,7 @@ import { ApiModule } from './api/api.module';
     OrchestratorModule,
     PrismaModule,
     ApiModule,
+    EventsModule,
   ],
   providers: [PrismaService],
 })

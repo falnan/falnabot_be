@@ -15,7 +15,7 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     });
     if (!user) {
       user = await this.user.create({
-        data: { phoneNumber: phone, name: '', role: 'client' },
+        data: { phoneNumber: phone, username: '' },
       });
     }
     return user;
@@ -30,12 +30,6 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
   async messageOutgoing(message: Prisma.MessageCreateInput) {
     return this.message.create({
       data: message,
-    });
-  }
-
-  async createConversation(conversation: Prisma.ConversationCreateInput) {
-    return this.conversation.create({
-      data: conversation,
     });
   }
 }

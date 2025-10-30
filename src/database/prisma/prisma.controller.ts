@@ -1,74 +1,99 @@
 import { Controller, Get } from '@nestjs/common';
 import { PrismaService } from './prisma.service';
-import { Conversation, MessageType, Role, User } from 'generated/prisma';
+import { MessageType, User } from 'generated/prisma';
 import { faker } from '@faker-js/faker';
 
-@Controller('prisma')
+@Controller('seed')
 export class PrismaController {
   constructor(private prisma: PrismaService) {}
 
-  @Get('seed')
+  @Get()
   async seedDatabase() {
-    console.log('🌱 Start seeding...');
+    // 🔹 Hapus semua data lama
+    await this.prisma.message.deleteMany();
+    await this.prisma.conversationParticipant.deleteMany();
+    await this.prisma.conversation.deleteMany();
+    await this.prisma.user.deleteMany();
 
-    // 🧩 1️⃣ Create Admin User
-    const admin = await this.prisma.user.create({
-      data: {
-        phoneNumber: faker.phone.number(),
-        name: faker.person.fullName(),
-        role: Role.admin,
-      },
-    });
+    // 🔹 Reset autoincrement ID agar mulai dari 1
+    // Ini khusus untuk SQLite
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM sqlite_sequence WHERE name='User';`,
+    );
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM sqlite_sequence WHERE name='Conversation';`,
+    );
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM sqlite_sequence WHERE name='ConversationParticipant';`,
+    );
+    await this.prisma.$executeRawUnsafe(
+      `DELETE FROM sqlite_sequence WHERE name='Message';`,
+    );
 
-    // 🧩 2️⃣ Create 20 Client Users
-    const clients: User[] = [];
-    for (let i = 0; i < 20; i++) {
-      const client = await this.prisma.user.create({
+    // 🔹 Buat 10 user
+    const users: User[] = [];
+    for (let i = 0; i < 10; i++) {
+      const user = await this.prisma.user.create({
         data: {
           phoneNumber: faker.phone.number(),
-          name: faker.person.fullName(),
-          role: Role.client,
+          username: faker.internet.userName(),
+          fullName: faker.person.fullName(),
+          title: faker.person.jobTitle(),
+          profile: faker.image.avatarGitHub(),
         },
       });
-      clients.push(client);
+      users.push(user);
     }
 
-    // 🧩 3️⃣ Create 20 Conversations (each between admin & one client)
-    const conversations: Conversation[] = [];
-    for (const client of clients) {
-      const convo = await this.prisma.conversation.create({
-        data: {
-          adminId: admin.id,
-          clientId: client.id,
-        },
+    // 🔹 Admin = user dengan ID 1 (pasti sekarang)
+    const admin = users[0];
+    const regularUsers = users.slice(1); // user selain admin
+
+    // 🔹 Buat 1 conversation per user (admin ↔ user)
+    for (const user of regularUsers) {
+      const conversation = await this.prisma.conversation.create({
+        data: {},
       });
-      conversations.push(convo);
-    }
 
-    // 🧩 4️⃣ Create 50 Messages (randomly assigned)
-    for (let i = 0; i < 50; i++) {
-      const convo = faker.helpers.arrayElement(conversations);
-      const sender = faker.helpers.arrayElement([
-        admin,
-        faker.helpers.arrayElement(clients),
-      ]);
-
-      await this.prisma.message.create({
-        data: {
-          userId: sender.id,
-          conversationId: convo.id,
-          message: faker.lorem.sentence(),
-          messageClassification: faker.helpers.arrayElement([
-            'general',
-            'question',
-            'complaint',
-          ]),
-          messageType: faker.helpers.arrayElement(Object.values(MessageType)),
-        },
+      // Tambahkan peserta
+      await this.prisma.conversationParticipant.createMany({
+        data: [
+          { userId: admin.id, conversationId: conversation.id },
+          { userId: user.id, conversationId: conversation.id },
+        ],
       });
+
+      // Buat pesan acak bolak-balik
+      const messageCount = faker.number.int({ min: 6, max: 12 });
+      let isAdminTurn = faker.datatype.boolean();
+
+      for (let i = 0; i < messageCount; i++) {
+        const senderId = isAdminTurn ? admin.id : user.id;
+        await this.prisma.message.create({
+          data: {
+            conversationId: conversation.id,
+            senderId,
+            message: faker.lorem.sentence(),
+            messageClassification: null,
+            messageType: MessageType.text,
+          },
+        });
+        isAdminTurn = !isAdminTurn;
+      }
     }
 
-    console.log('✅ Seeding completed.');
-    return { message: '✅ Database seeded successfully' };
+    // 🔹 Log hasil
+    const counts = {
+      users: await this.prisma.user.count(),
+      conversations: await this.prisma.conversation.count(),
+      participants: await this.prisma.conversationParticipant.count(),
+      messages: await this.prisma.message.count(),
+    };
+
+    return {
+      message: '✅ Seed completed successfully',
+      adminId: admin.id,
+      counts,
+    };
   }
 }

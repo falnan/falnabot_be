@@ -1,11 +1,24 @@
-import { Controller, Get, Logger, Param, Query } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Logger,
+  NotFoundException,
+  Param,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { PrismaService } from 'src/database/prisma/prisma.service';
+import { EventsGateway } from 'src/events/event.gateway';
 
 @Controller('api')
 export class ApiController {
   private readonly logger = new Logger(ApiController.name);
 
-  constructor(private prisma: PrismaService) {}
+  constructor(
+    private prisma: PrismaService,
+    private readonly eventsGateway: EventsGateway,
+  ) {}
 
   // @Get('users')
   // async findManyUser(@Query() query: any) {
@@ -110,6 +123,7 @@ export class ApiController {
 
       return {
         id: `conv${conv.id}`,
+        phoneNumber: otherUser?.phoneNumber,
         profile: otherUser?.profile ?? null,
         username: otherUser?.username ?? null,
         fullName: otherUser?.fullName ?? null,
@@ -126,5 +140,39 @@ export class ApiController {
     });
 
     return { conversations: formatted };
+  }
+
+  @Put(':id')
+  async updateFullName(
+    @Param('id') id: string,
+    @Body('fullName') fullName: string,
+  ) {
+    const userId = Number(id);
+
+    console.log(id, fullName);
+    const existingUser = await this.prisma.user.findUnique({
+      where: { id: userId },
+    });
+
+    if (!existingUser) {
+      throw new NotFoundException(`User with ID ${id} not found`);
+    }
+
+    // 🔹 Update hanya field fullName
+    const updatedUser = await this.prisma.user.update({
+      where: { id: userId },
+      data: { fullName },
+    });
+
+    // 🔹 Trigger event ke semua client WebSocket
+    this.eventsGateway.emitUserUpdated({
+      id: updatedUser.id,
+      fullName: updatedUser.fullName,
+    });
+
+    return {
+      message: '✅ User fullName updated successfully',
+      user: updatedUser,
+    };
   }
 }

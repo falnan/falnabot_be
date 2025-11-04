@@ -20,22 +20,13 @@ export class OrchestratorService {
     const sender: string = rawText?.from || '';
     const message: string = rawText?.text?.body || '';
     const messageType: string = rawText?.type || '';
-    const messageCategoryByList: string =
-      rawText?.interactive?.list_reply?.id ||
-      rawText?.interactive?.button_reply?.id ||
-      '';
 
     const isNewOrExpired = this.userSessionService.isNewOrExpired(sender);
     this.userSessionService.updateSession(sender);
 
-    const messageCategory: string =
-      await this.classificationService.classifyMessage(message);
-
-    this.logger.log(sender);
-    this.logger.log(message, messageCategory);
-
     // find or create new user to db
-    const user = await this.prisma.findOrCreateNewUserByPhone(sender);
+    const { senderId, conversationId } =
+      await this.prisma.findOrCreateNewUserByPhone(sender);
 
     // send greeting if new or session expired
     if (isNewOrExpired) {
@@ -44,8 +35,30 @@ export class OrchestratorService {
 
     // handle message by type
     if (messageType == 'text') {
+      const messageCategory: string =
+        await this.classificationService.classifyMessage(message);
+      await this.prisma.insertDbIncomingMessage(
+        message,
+        conversationId,
+        senderId,
+        'text',
+        messageCategory,
+      );
+      //TODO process outgoing message as well
       await this.messageTypeText(sender, messageCategory);
     } else if (messageType == 'interactive') {
+      const messageCategoryByList: string =
+        rawText?.interactive?.list_reply?.id ||
+        rawText?.interactive?.button_reply?.id ||
+        '';
+      await this.prisma.insertDbIncomingMessage(
+        message,
+        conversationId,
+        senderId,
+        'interactive',
+        messageCategoryByList,
+      );
+      //TODO process outgoing message as well
       return await this.messagingService.sendMessageByListTemplate(
         sender,
         messageCategoryByList,

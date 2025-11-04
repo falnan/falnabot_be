@@ -8,9 +8,6 @@ import { PrismaService } from './database/prisma/prisma.service';
 import { PrismaModule } from './database/prisma/prisma.module';
 import { ApiModule } from './api/api.module';
 import { EventsModule } from './events/events.module';
-import { InsertDbModule } from './database/insert-db/insert-db.module';
-import { OutgoingMessageModule } from './outgoing-message/outgoing-message.module';
-import { OutgoingMessageModule } from './database/outgoing-message/outgoing-message.module';
 
 @Module({
   imports: [
@@ -22,8 +19,6 @@ import { OutgoingMessageModule } from './database/outgoing-message/outgoing-mess
     PrismaModule,
     ApiModule,
     EventsModule,
-    InsertDbModule,
-    OutgoingMessageModule,
   ],
   providers: [PrismaService],
 })

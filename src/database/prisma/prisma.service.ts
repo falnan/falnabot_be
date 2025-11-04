@@ -1,5 +1,5 @@
 import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
-import { Message, Prisma, PrismaClient } from 'generated/prisma';
+import { Conversation, Message, Prisma, PrismaClient } from 'generated/prisma';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
@@ -14,30 +14,45 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
       where: { phoneNumber: sender },
     });
 
-    //if no user, create new user, conversation, and conversation participant
+    let conversation: any;
+    let conversationParticipant: any;
+
+    //if user doesn't exist, create new user, conversation, and conversation participant
     if (!user) {
-      const user = await this.user.create({
+      user = await this.user.create({
         data: { phoneNumber: sender, username: '', fullName: '' },
       });
-      const conversation = await this.conversation.create({ data: {} });
-      await this.conversationParticipant.create({
-        data: { conversationId: conversation.id, userId: user.id },
+      conversation = await this.conversation.create({ data: {} });
+      await this.conversationParticipant.createMany({
+        data: [
+          { conversationId: conversation.id, userId: user.id },
+          { conversationId: conversation.id, userId: 1 }, // 1 is the admin
+        ],
+      });
+    } else {
+      //if user exists, find conversation
+      conversationParticipant = await this.conversationParticipant.findFirst({
+        where: { userId: user.id },
       });
     }
-    //TODO lanjutkan ini
-    return { data: { senderId: user?.id, conversationId: conversation.id } };
+
+    return {
+      senderId: user.id,
+      conversationId: conversation
+        ? conversation.id
+        : conversationParticipant.conversationId,
+    };
   }
 
   async insertDbOutgoingMessage(
     message: string,
     conversationId: number,
-    senderId: number,
     messageType: 'text' | 'interactive',
   ) {
     await this.message.create({
       data: {
         conversationId,
-        senderId,
+        senderId: 1, // 1 is the admin
         message,
         messageType,
       },

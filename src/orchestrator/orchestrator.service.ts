@@ -13,6 +13,7 @@ export class OrchestratorService {
     private readonly classificationService: ClassificationService,
     private readonly userSessionService: UserSessionService,
   ) {}
+
   public async chatbotFlow(body: any) {
     const rawText = body?.entry?.[0]?.changes?.[0]?.value?.messages?.[0];
     if (!rawText) return;
@@ -24,20 +25,24 @@ export class OrchestratorService {
       rawText?.interactive?.button_reply?.id ||
       '';
 
-    this.logger.log(sender);
-
     const isNewOrExpired = this.userSessionService.isNewOrExpired(sender);
     this.userSessionService.updateSession(sender);
 
     const messageCategory: string =
       await this.classificationService.classifyMessage(message);
 
+    this.logger.log(sender);
     this.logger.log(message, messageCategory);
 
+    // find or create new user to db
+    const user = await this.prisma.findOrCreateNewUserByPhone(sender);
+
+    // send greeting if new or session expired
     if (isNewOrExpired) {
       await this.messagingService.sendGreeting(sender);
     }
 
+    // handle message by type
     if (messageType == 'text') {
       await this.messageTypeText(sender, messageCategory);
     } else if (messageType == 'interactive') {

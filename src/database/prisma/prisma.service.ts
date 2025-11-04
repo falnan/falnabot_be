@@ -9,27 +9,56 @@ export class PrismaService extends PrismaClient implements OnModuleInit {
     await this.$connect();
   }
 
-  async findOrCreateByPhone(phone: string) {
+  async findOrCreateNewUserByPhone(sender: string) {
     let user = await this.user.findUnique({
-      where: { phoneNumber: phone },
+      where: { phoneNumber: sender },
     });
+
+    //if no user, create new user, conversation, and conversation participant
     if (!user) {
-      user = await this.user.create({
-        data: { phoneNumber: phone, username: '' },
+      const user = await this.user.create({
+        data: { phoneNumber: sender, username: '', fullName: '' },
+      });
+      const conversation = await this.conversation.create({ data: {} });
+      await this.conversationParticipant.create({
+        data: { conversationId: conversation.id, userId: user.id },
       });
     }
-    return user;
+    //TODO lanjutkan ini
+    return { data: { senderId: user?.id, conversationId: conversation.id } };
   }
 
-  async messageIncoming(message: Message) {
-    return this.message.create({
-      data: message,
+  async insertDbOutgoingMessage(
+    message: string,
+    conversationId: number,
+    senderId: number,
+    messageType: 'text' | 'interactive',
+  ) {
+    await this.message.create({
+      data: {
+        conversationId,
+        senderId,
+        message,
+        messageType,
+      },
     });
   }
 
-  async messageOutgoing(message: Prisma.MessageCreateInput) {
-    return this.message.create({
-      data: message,
+  async insertDbIncomingMessage(
+    message: string,
+    conversationId: number,
+    senderId: number,
+    messageType: 'text' | 'interactive',
+    messageClassification: string,
+  ) {
+    await this.message.create({
+      data: {
+        conversationId,
+        senderId,
+        message,
+        messageType,
+        messageClassification,
+      },
     });
   }
 }

@@ -6,6 +6,7 @@ import {
   WebSocketServer,
   type WsResponse,
 } from '@nestjs/websockets';
+import { ap } from 'node_modules/@faker-js/faker/dist/airline-CLphikKp.cjs';
 import { from, Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { Server, Socket } from 'socket.io';
@@ -22,17 +23,57 @@ export class EventsGateway {
 
   constructor(private readonly prisma: PrismaService) {}
 
+  private formatConversations(conversations: any[], adminId: number) {
+    return conversations.map((conv) => {
+      const otherUser = conv.participants.find(
+        (p) => p.userId !== adminId,
+      )?.user;
+
+      return {
+        id: `conv${conv.id}`,
+        phoneNumber: otherUser?.phoneNumber,
+        profile: otherUser?.profile ?? null,
+        username: otherUser?.username ?? null,
+        fullName: otherUser?.fullName ?? null,
+        title: otherUser?.title ?? null,
+        messages: conv.messages.map((msg) => ({
+          sender:
+            msg.senderId === adminId
+              ? 'You'
+              : (otherUser?.fullName ?? 'Unknown'),
+          message: msg.message ?? '',
+          timestamp: msg.timestamp,
+        })),
+      };
+    });
+  }
+
   emitUserUpdated(user: any) {
     this.server.emit('user_updated', user);
   }
 
-  // @SubscribeMessage('events')
-  // onEvent(@MessageBody() data: unknown): Observable<WsResponse<number>> {
-  //   const event = 'events';
-  //   const response = [1, 2, 3];
+  async emitConversationUpdated(conversationId: number) {
+    const adminId = 1;
 
-  //   return from(response).pipe(map((data) => ({ event, data })));
-  // }
+    // Ambil ulang hanya 1 conversation yang berubah
+    const conv = await this.prisma.conversation.findUnique({
+      where: { id: conversationId },
+      include: {
+        participants: { include: { user: true } },
+        messages: {
+          include: { sender: true },
+          orderBy: { timestamp: 'desc' },
+        },
+      },
+    });
+    // return { api: 'test' };
+    if (!conv) return;
+
+    const formatted = this.formatConversations([conv], adminId)[0];
+
+    // Kirim ke semua client yang sedang tersambung
+    this.server.emit('conversation_updated', formatted);
+  }
 
   @SubscribeMessage('events')
   // handleEvent(@MessageBody() jeje: unknown): WsResponse<unknown> {

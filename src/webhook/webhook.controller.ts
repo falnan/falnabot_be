@@ -26,6 +26,7 @@ export class WebhookController {
     @Query('hub.verify_token') token: string,
     @Query('hub.challenge') challenge: string,
   ) {
+    this.logger.log('Verifikasi webhook dimulai');
     const verified = this.webhookService.verifyWebhook(mode, token, challenge);
     return verified;
   }

@@ -71,10 +71,7 @@ export class MessagingService {
         (item) =>
           item.id.toLowerCase().trim() == messageCategory.toLowerCase().trim(),
       );
-      this.logger.log({
-        matchedTemplate: matchedTemplate,
-        messageCategory: messageCategory,
-      });
+
       if (!matchedTemplate) {
         await this.sendUnknowMessage(sender);
         return;

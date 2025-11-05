@@ -33,7 +33,6 @@ export class ClassificationService {
         Contoh jawaban: lainnya
       `,
       });
-      //TODO Tambahkan logika validasi jawaban, jika tidak cocok, return lainnya
       return response.text;
     } catch (error) {
       this.logger.error('Error:', error.stack);

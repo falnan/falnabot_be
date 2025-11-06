@@ -50,12 +50,14 @@ Terima kasih.🙏`,
   },
   {
     questionCategory: 'info_lowongan_kerja',
-    answer: `💼 Untuk melihat *informasi lowongan kerja luar negeri resmi* yang tersedia melalui BP3MI Riau, silakan kunjungi tautan berikut:  
-👉 [Daftar Lowongan Kerja Luar Negeri] (https://siskop2mi.bp2mi.go.id/lowongan/list)  
+    //     answer: `💼 Untuk melihat *informasi lowongan kerja luar negeri resmi* yang tersedia melalui BP3MI Riau, silakan kunjungi tautan berikut:
+    // 👉 [Daftar Lowongan Kerja Luar Negeri] (https://siskop2mi.bp2mi.go.id/lowongan/list)
 
-Pastikan Anda hanya melamar melalui sumber resmi BP3MI untuk menghindari penipuan tenaga kerja.  
-Semoga informasi ini bermanfaat.
-Terima kasih.🙏`,
+    // Pastikan Anda hanya melamar melalui sumber resmi BP3MI untuk menghindari penipuan tenaga kerja.
+    // Semoga informasi ini bermanfaat.
+    // Terima kasih.🙏`,
+    answer: `💬 Untuk bantuan lebih lanjut, silakan hubungi admin kami melalui tautan berikut:
+    👉 (wa.me/+6281175511011)`,
   },
   {
     questionCategory: 'cara_bekerja_ke_luar_negeri',
@@ -76,7 +78,7 @@ Semoga informasi ini bermanfaat.🙏`,
   {
     questionCategory: 'kendala_siskop2mi',
     answer: `⚙️ Jika Anda mengalami kendala pada aplikasi *SISKOP2MI*, mohon laporkan melalui kontak berikut:  
-👉 (wa.me/+6282297918891)  
+👉 (wa.me/+6281175511011)  
 
 Tim teknis kami akan membantu secepat mungkin.
 📬 Mohon menunggu balasan dari kami.  
@@ -90,6 +92,6 @@ Terima kasih.🙏`,
   {
     questionCategory: 'hubungi_admin',
     answer: `💬 Untuk bantuan lebih lanjut, silakan hubungi admin kami melalui tautan berikut:
-    👉 (wa.me/+6282297918891)`,
+    👉 (wa.me/+6281175511011)`,
   },
 ];

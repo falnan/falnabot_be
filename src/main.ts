@@ -20,7 +20,7 @@ async function bootstrap() {
   );
 
   await app.register(cors, {
-    origin: ['https://falnabot-fe.pages.dev'],
+    origin: ['https://falnabot-fe.pages.dev', 'http://localhost:5713'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     credentials: true,
   });

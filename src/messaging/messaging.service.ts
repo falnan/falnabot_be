@@ -97,10 +97,10 @@ export class MessagingService {
           interactive: {
             type: 'list',
             body: {
-              text: `🙏 Mohon maaf, saat ini *Zapin AI* belum dapat memberikan jawaban akurat atas pertanyaan Anda. Silakan pilih layanan resmi BP3MI Riau yang sesuai di bawah ini.`,
+              text: `🙏 Mohon maaf, saat ini *Zapin Bot* belum dapat memberikan jawaban akurat atas pertanyaan Anda. Silakan pilih layanan resmi BP3MI Riau yang sesuai di bawah ini.`,
             },
             footer: {
-              text: 'Zapin AI - Asisten Digital BP3MI Riau',
+              text: 'Zapin Bot - Asisten Digital BP3MI Riau',
             },
             action: {
               button: 'Lihat Layanan',
@@ -130,14 +130,14 @@ export class MessagingService {
           interactive: {
             type: 'list',
             body: {
-              text: `👋 Hai. Saya *Zapin AI*, asisten digital yang siap membantu Anda mendapatkan informasi  seputar layanan BP3MI. Anda dapat bertanya langsung, misalnya: 
+              text: `👋 Hai. Saya *Zapin Bot*, asisten digital yang siap membantu Anda mendapatkan informasi  seputar layanan BP3MI. Anda dapat bertanya langsung, misalnya: 
 
-💬_Bagaimana cara bekerja ke luar negeri?_
+💬_Bagaimana cara mengajukan izin penelitian di BP3MI Riau?_
 
 Atau, Anda juga dapat mengakses layanan resmi melalui menu di bawah ini.`,
             },
             footer: {
-              text: 'Zapin AI - Asisten Digital BP3MI Riau',
+              text: 'Zapin Bot - Asisten Digital BP3MI Riau',
             },
             action: {
               button: 'Lihat Layanan',

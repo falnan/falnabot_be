@@ -15,10 +15,6 @@ export const dataAITemplate: DataAITemplate[] = [
     Terima kasih atas kerja samanya.🙏`,
   },
   {
-    questionCategory: 'cara_bekerja_ke_luar_negeri',
-    answer: `mana lah saya tahu`,
-  },
-  {
     questionCategory: 'permintaan_data_resmi',
     answer: `📊 Untuk keperluan *permintaan data resmi* BP3MI Riau, silakan isi formulir berikut:  
 👉 [Formulir Permintaan Data](https://forms.gle/4TSHqAFKgFAPRo7L8)  

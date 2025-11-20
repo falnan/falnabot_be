@@ -30,6 +30,8 @@ export class OrchestratorService {
       rawText?.interactive?.list_reply?.id ||
       rawText?.interactive?.button_reply?.id ||
       '';
+    const interactiveTitle: string =
+      rawText?.interactive?.list_reply?.title || '';
 
     const isNewOrExpired = this.userSessionService.isNewOrExpired(sender);
     this.userSessionService.updateSession(sender);
@@ -48,7 +50,7 @@ export class OrchestratorService {
       );
     } else if (messageType == 'interactive') {
       await this.prisma.insertDbIncomingMessage(
-        message,
+        interactiveTitle,
         conversationId,
         senderId,
         'text',
@@ -59,7 +61,7 @@ export class OrchestratorService {
     // send greeting if new or session expired
     if (isNewOrExpired) {
       await this.prisma.insertDbOutgoingMessage(
-        `👋 Hai. Saya *Zapin AI*, asisten digital yang siap membantu Anda mendapatkan informasi  seputar layanan BP3MI. Anda dapat bertanya langsung, misalnya: 
+        `👋 Hai. Saya *Zapin Bot*, asisten digital yang siap membantu Anda mendapatkan informasi  seputar layanan BP3MI. Anda dapat bertanya langsung, misalnya: 
 
 💬_Bagaimana cara bekerja ke luar negeri?_
 
@@ -94,7 +96,7 @@ Atau, Anda juga dapat mengakses layanan resmi melalui menu di bawah ini.`,
       );
     } else {
       await this.prisma.insertDbOutgoingMessage(
-        `🙏 Mohon maaf, saat ini *Zapin AI* belum dapat memberikan jawaban akurat atas pertanyaan Anda. Silakan pilih layanan resmi BP3MI Riau yang sesuai di bawah ini.`,
+        `🙏 Mohon maaf, saat ini *Zapin Bot* belum dapat memberikan jawaban akurat atas pertanyaan Anda. Silakan pilih layanan resmi BP3MI Riau yang sesuai di bawah ini.`,
         conversationId,
         'interactive',
       );
@@ -115,7 +117,7 @@ Atau, Anda juga dapat mengakses layanan resmi melalui menu di bawah ini.`,
     } else if (messageCategory == 'lainnya') {
       this.logger.log('masuk lainnya');
       await this.prisma.insertDbOutgoingMessage(
-        `🙏 Mohon maaf, saat ini *Zapin AI* belum dapat memberikan jawaban akurat atas pertanyaan Anda. Silakan pilih layanan resmi BP3MI Riau yang sesuai di bawah ini.`,
+        `🙏 Mohon maaf, saat ini *Zapin Bot* belum dapat memberikan jawaban akurat atas pertanyaan Anda. Silakan pilih layanan resmi BP3MI Riau yang sesuai di bawah ini.`,
         conversationId,
         'interactive',
       );

@@ -58,13 +58,7 @@ Terima kasih.🙏`,
     id: 'lowongan_kerja',
     title: 'Lowongan Kerja',
     description: 'Lihat daftar lowongan luar negeri resmi.',
-    //     answer: `💼 Untuk melihat *informasi lowongan kerja luar negeri resmi* yang tersedia melalui BP3MI Riau, silakan kunjungi tautan berikut:
-    // 👉 [Daftar Lowongan Kerja Luar Negeri] (https://siskop2mi.bp2mi.go.id/lowongan/list)
-
-    // Pastikan Anda hanya melamar melalui sumber resmi BP3MI untuk menghindari penipuan tenaga kerja.
-    // Semoga informasi ini bermanfaat.
-    // Terima kasih.🙏`,
-    answer: `💬 Untuk info lowongan kerja, silakan hubungi kembali admin kami melalui tautan berikut:
+    answer: `💬 Untuk info lowongan kerja, silakan hubungi admin kami melalui tautan berikut:
     👉 (wa.me/+6281175511011)`,
   },
   {
